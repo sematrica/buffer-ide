@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 95-Themed Code Editor</title>
+
+    <!-- Include CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+
+    <!-- Include multiple CodeMirror themes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/monokai.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
+
+    <style>
+        /* Windows 95-Themed Font and General Style */
+        @import url('https://fonts.googleapis.com/css2?family=Tahoma:wght@400&display=swap');
+
+        body {
+            font-family: 'Tahoma', sans-serif;
+            background-color: #c3c3c3;
+            color: black;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            color: black;
+            font-size: 18px;
+            padding-bottom: 10px;
+            background-color: #000080;
+            color: white;
+            padding: 10px;
+            box-shadow: inset -2px -2px 0 #404040, inset 2px 2px 0 white;
+        }
+
+        #container {
+            display: flex;
+            flex: 1;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        /* Input Section (Code Editor) with Windows 95 Look */
+        #input {
+            width: 50%;
+            height: 100%;
+            box-sizing: border-box;
+            background: #e0e0e0;
+            border: 2px solid #404040;
+            border-radius: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset -2px -2px 0 white, inset 2px 2px 0 #404040;
+            position: relative;
+        }
+
+        /* CodeMirror Editor Styling (Syntax Highlighting remains intact) */
+        .CodeMirror {
+            flex: 1;
+            background-color: white;
+            border: none;
+            font-size: 12px;
+            padding: 10px;
+            line-height: 1.5;
+        }
+
+        /* Buttons with Windows 95 Theme */
+        .button {
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #c3c3c3;
+            color: black;
+            border: 2px solid #404040;
+            border-radius: 0;
+            box-shadow: -2px -2px 0 white, 2px 2px 0 #404040;
+            text-align: center;
+            margin-bottom: 10px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .button:hover {
+            background-color: #000080;
+            color: white;
+            box-shadow: inset -2px -2px 0 #404040, inset 2px 2px 0 white;
+        }
+
+        /* Output Section with Windows 95-Themed Frame */
+        #output {
+            width: 50%;
+            height: 100%;
+            background-color: #e0e0e0;
+            border: 2px solid #404040;
+            border-radius: 0;
+            display: flex;
+            position: relative;
+            box-shadow: inset -2px -2px 0 white, inset 2px 2px 0 #404040;
+        }
+
+        /* Frame inside the output section (iframe) */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Bufferide.sẹm̤̿atrica</h1>
+
+<div id="container">
+    <!-- Input Section (Code Editor) -->
+    <div id="input">
+        <!-- CodeMirror Editor -->
+        <textarea id="codeInput"></textarea>
+        <!-- Execute and Lock Button -->
+        <div id="executeButton" class="button">Execute</div>
+        <div id="lockButton" class="button" style="display:none;">Lock Input</div>
+        <!-- Theme Toggle Button -->
+        <div id="themeToggleButton" class="button">Toggle Theme</div>
+    </div>
+
+    <!-- Output Section (Resulting Webpage) -->
+    <div id="output">
+        <iframe id="outputFrame"></iframe>
+    </div>
+</div>
+
+<!-- Include CodeMirror JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+<!-- Include CodeMirror Mode for HTML -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/htmlmixed/htmlmixed.min.js"></script>
+<!-- Include CodeMirror CSS and JavaScript modes -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/css/css.min.js"></script>
+
+<script>
+    // Initialize CodeMirror editor with syntax highlighting
+    let theme = 'monokai'; // Default theme
+    const codeEditor = CodeMirror.fromTextArea(document.getElementById('codeInput'), {
+        mode: 'htmlmixed',
+        theme: theme,
+        lineNumbers: true,
+        lineWrapping: true,
+    });
+
+    const outputFrame = document.getElementById('outputFrame');
+    let isLocked = false;
+    let originalCode = ''; // Store original code for proper unlocking
+
+    // Function to execute code when the button is clicked
+    function executeCode() {
+        const code = originalCode || codeEditor.getValue(); // Use original code if available
+        const outputDoc = outputFrame.contentDocument || outputFrame.contentWindow.document;
+        outputDoc.open();
+        outputDoc.write(code);
+        outputDoc.close();
+
+        // Show the lock button after executing the code
+        document.getElementById('lockButton').style.display = 'block';
+    }
+
+    // Function to lock the input and show encrypted view
+    function lockInput() {
+        if (!isLocked) {
+            // Lock the editor and encrypt the view
+            codeEditor.setOption('readOnly', true);
+            originalCode = codeEditor.getValue();
+            const encryptedCode = originalCode.replace(/./g, '*');
+            codeEditor.setValue(encryptedCode);
+            document.getElementById('lockButton').innerText = 'Unlock Input';
+            isLocked = true;
+        } else {
+            // Unlock the editor and restore the original code
+            codeEditor.setOption('readOnly', false);
+            codeEditor.setValue(originalCode);
+            document.getElementById('lockButton').innerText = 'Lock Input';
+            isLocked = false;
+        }
+    }
+
+    // Function to toggle between themes
+    function toggleTheme() {
+        theme = theme === 'monokai' ? 'dracula' : 'monokai'; // Toggle between two popular themes
+        codeEditor.setOption('theme', theme);
+    }
+
+    // Add event listener to the Execute button
+    document.getElementById('executeButton').addEventListener('click', executeCode);
+
+    // Add event listener to the Lock button
+    document.getElementById('lockButton').addEventListener('click', lockInput);
+
+    // Add event listener to the Theme Toggle button
+    document.getElementById('themeToggleButton').addEventListener('click', toggleTheme);
+</script>
+
+</body>
+</html>
